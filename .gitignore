@@ -105,3 +105,6 @@ dist
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
+
+.vscode/arduino.json
+.vscode/c_cpp_properties
