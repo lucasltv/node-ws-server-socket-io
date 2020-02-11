@@ -107,4 +107,4 @@ dist
 .vscode-test
 
 .vscode/arduino.json
-.vscode/c_cpp_properties
+.vscode/c_cpp_properties.json
