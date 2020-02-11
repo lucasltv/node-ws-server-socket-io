@@ -1,5 +1,7 @@
 module.exports = {
     ESP_CONNECTED: "ESP_CONNECTED",
+    ESP_DISCONNECTED: "ESP_DISCONNECTED",
+    ESP_EVENT: "ESP_EVENT",
     WS_RESPONSE: "WS_RESPONSE",
     WS_DISCONNECTED: "disconnect",
 }

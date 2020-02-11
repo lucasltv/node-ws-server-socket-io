@@ -5,16 +5,24 @@ var customError = require('../../helpers/customError'),
 module.exports = {
     setSocketIoInstance: _io => io = _io,
     handleNewConnection: socket => {
-        socket.on(enumWebsocketEvents.ESP_CONNECTED, async function (data) {
-            console.log(`LOG: data`, data);
+        const { handshake } = socket;
+        socket.on("WEB_EVENT", function (data) {
             socket.emit(enumWebsocketEvents.WS_RESPONSE, data);
         });
 
-        socket.on(enumWebsocketEvents.WS_DISCONNECTED, async function (disconnect_msg) {
-            console.log(`LOG: disconnect_msg`, disconnect_msg);
+        if (!handshake.query.device || handshake.query.device !== "WEB") io.emit(enumWebsocketEvents.ESP_CONNECTED);
+        // socket.on(enumWebsocketEvents.ESP_CONNECTED, function (data) {
+        //     console.log(`LOG: data ESP_CONNECTED`, data);
+        // });
+        socket.on(enumWebsocketEvents.ESP_EVENT, function (data) {
+            io.emit(enumWebsocketEvents.ESP_EVENT, data);
+        });
+
+        socket.on(enumWebsocketEvents.WS_DISCONNECTED, function (disconnect_msg) {
+            if (disconnect_msg === "ping timeout") io.emit(enumWebsocketEvents.ESP_DISCONNECTED); //TODO: se é ESP
         });
     },
-    ioMiddleware: async function (socket, next) {
+    ioMiddleware: function (socket, next) {
         try {
             const { token = false } = socket.handshake.query
             // if (!token) return next(customError(`WS error: token is required!`, 403)); //FIXME:

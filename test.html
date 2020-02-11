@@ -16,22 +16,46 @@
     <div>
         <input id="input" placeholder="Text to send..." />
     </div>
-    <h3 id="status">OFFLINE!</h3>
+    <h3>WS SERVER: <b id="status">OFFLINE!</b> </h3>
+    <h3>ESP8266: <b id="status-esp">OFFLINE!</b> </h3>
+    <h4>EVENTO (ESP): <b id="event-esp">Aguardando primeiro evento...</b> </h4>
     <script>
         $(function () {
-            var socket = io.connect("http://localhost:3000");
+            var socket = io.connect("http://localhost:3000", {
+                query: {
+                    device: 'WEB'
+                }
+            });
+
             $("#input").keyup(e => {
                 const { target } = e;
                 const { value } = target;
-                socket.emit('ESP_CONNECTED', value);
+                socket.emit('WEB_EVENT', value);
             });
 
             socket.on('connect', () => $("#status").html(`ONLINE!`));
-            socket.on('disconnect', () => $("#status").html(`OFFLINE!`));
+            socket.on('disconnect', () => {
+                $("#status").html(`OFFLINE!`)
+                $("#status-esp").html("OFFLINE!");
+            });
 
             socket.on("WS_RESPONSE", data => {
                 console.log(`LOG: data`, data);
                 $("#title").html(`Response from WS: ${data}`);
+            });
+
+            socket.on("ESP_DISCONNECTED", data => {
+                $("#status-esp").html("OFFLINE!");
+            });
+
+            socket.on("ESP_CONNECTED", data => {
+                console.log(`LOG: ESP_CONNECTED`);
+                $("#status-esp").html("ONLINE!");
+            });
+
+            socket.on("ESP_EVENT", data => {
+                $("#status-esp").html("ONLINE!");
+                $("#event-esp").html(JSON.stringify(data));
             });
         });
     </script>
