@@ -16,6 +16,7 @@
     <div>
         <input id="input" placeholder="Text to send..." />
     </div>
+    <h3 id="status">OFFLINE!</h3>
     <script>
         $(function () {
             var socket = io.connect("http://localhost:3000");
@@ -24,6 +25,9 @@
                 const { value } = target;
                 socket.emit('ESP_CONNECTED', value);
             });
+
+            socket.on('connect', () => $("#status").html(`ONLINE!`));
+            socket.on('disconnect', () => $("#status").html(`OFFLINE!`));
 
             socket.on("WS_RESPONSE", data => {
                 console.log(`LOG: data`, data);
